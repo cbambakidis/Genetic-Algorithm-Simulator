@@ -33,7 +33,7 @@ public class BruteForce {
 
     }
     //"Adapt" it to be non generic.
-    public static <T> Collection<List<T>> permute1(Collection<T> input) {
+    private static <T> Collection<List<T>> permute1(Collection<T> input) {
         Collection<List<T>> output = new ArrayList<List<T>>();
         if (input.isEmpty()) {
             output.add(new ArrayList<T>());

@@ -37,7 +37,7 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
 
     //The crossover method compares this chromosome with another chromosome and returns a child with randomized results based on the parents.
     public Chromosome crossover(Chromosome other) {
-        ArrayList<Item> testerR = new ArrayList();
+        ArrayList<Item> testerR = new ArrayList<>();
         for (int i = 0; i < other.size(); i++) {
             int r = rng.nextInt((10));
             if (r < 6) {

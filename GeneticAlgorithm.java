@@ -8,9 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.InputMismatchException;
-import java.util.Random;
 import java.util.Scanner;
 
 /**
@@ -111,12 +109,12 @@ public class GeneticAlgorithm {
                 keyboard.nextLine();
             }
         }
+        keyboard.close();
         // CONTROLS
 
         ArrayList<Item> itemList = new ArrayList<>(readData(textFile)); // Change list name.
 
         ArrayList<Chromosome> CurrentPopulation;
-        ArrayList<Chromosome> NextPopulation = new ArrayList<>();
 
         // STEP ONE: INITIALIZE FIRST POPULATION WITH 10 MEMBERS.
         CurrentPopulation = initializePopulation(itemList, popSize);
@@ -183,7 +181,7 @@ public class GeneticAlgorithm {
      * @return returns a population with randomized items.
      */
     public static ArrayList<Chromosome> initializePopulation(ArrayList<Item> items, int populationSize) {
-        ArrayList<Chromosome> Generation = new ArrayList();
+        ArrayList<Chromosome> Generation = new ArrayList<Chromosome>();
         for (int i = 0; i < populationSize; i++) {
             Chromosome initialGen = new Chromosome(items);
             Generation.add(initialGen);

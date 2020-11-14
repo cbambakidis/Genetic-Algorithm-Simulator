@@ -1,13 +1,13 @@
 import java.util.*;
 public class GeneThread extends Thread{
-    int starter = 0;
-    int numEpochs;
-    int popSize;
-    int threadNum;
-    final static double MUTATION = .1;
-    ArrayList<Chromosome> CurrentPopulation = new ArrayList<>();
-    ArrayList<Chromosome> NextPopulation = new ArrayList<>();
-    Random random = new Random();
+    private int starter = 0;
+    private int numEpochs;
+    private int popSize;
+    private int threadNum;
+    private final static double MUTATION = .1;
+    private ArrayList<Chromosome> CurrentPopulation = new ArrayList<>();
+    private ArrayList<Chromosome> NextPopulation = new ArrayList<>();
+    private Random random = new Random();
 
     public GeneThread(ArrayList<Chromosome> currentPop, int numEpochs, int popSize, int threadNumber){
       this.numEpochs = numEpochs;
