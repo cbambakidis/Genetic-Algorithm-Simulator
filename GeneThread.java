@@ -3,14 +3,17 @@ public class GeneThread extends Thread{
     int starter = 0;
     int numEpochs;
     int popSize;
+    int threadNum;
     final static double MUTATION = .1;
     ArrayList<Chromosome> CurrentPopulation = new ArrayList<>();
     ArrayList<Chromosome> NextPopulation = new ArrayList<>();
     Random random = new Random();
 
-    public GeneThread(ArrayList<Chromosome> currentPop, int numEpochs){
+    public GeneThread(ArrayList<Chromosome> currentPop, int numEpochs, int popSize, int threadNumber){
       this.numEpochs = numEpochs;
       CurrentPopulation.addAll(currentPop);
+      this.popSize = popSize;
+      threadNum = threadNumber;
     }
 
     public void run(){
@@ -34,7 +37,7 @@ public class GeneThread extends Thread{
 
             //STEP 6: CLEAR OUT THE OLD POPULATION AND ADD IN THE TOP 10 MEMBERS OF THE NEXT POPULATION/
             CurrentPopulation.clear();
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < popSize; i++) {
                 CurrentPopulation.add(NextPopulation.get(i));
             }
             Collections.sort(CurrentPopulation);
@@ -44,6 +47,7 @@ public class GeneThread extends Thread{
     }
 
     public void printTop(int x){
+        System.out.println("Thread " + threadNum + " :");
         CurrentPopulation.subList(0, x).forEach((s) -> {
             System.out.print(s);
         });

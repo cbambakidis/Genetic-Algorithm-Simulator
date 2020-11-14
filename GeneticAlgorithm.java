@@ -124,7 +124,7 @@ public class GeneticAlgorithm {
         int epochsPerThread = numEpochs / numThreads;
         ArrayList<GeneThread> threadList = new ArrayList<GeneThread>();
         for (int i = 0; i < numThreads; i++) {
-            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread);
+            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread, popSize/numThreads, i);
             threadList.add(N);
         }
         for (GeneThread D : threadList) {
@@ -138,7 +138,7 @@ public class GeneticAlgorithm {
         }
 
         System.out.println("From bruteforce: ");
-        System.out.println(BruteForce.getOptimalSet(itemList));
+        //System.out.println(BruteForce.getOptimalSet(itemList));
     }
 
     /**
