@@ -71,6 +71,9 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
     public int getFitness() {
         double totalWeight = 0;
         int totalValue = 0;
+        if(this.size() == 0){
+            return 0;
+        }
         for (Item aThi : this) {
             if (aThi.isIncluded()) {
                 totalWeight += aThi.getWeight();

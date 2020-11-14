@@ -75,7 +75,7 @@ public class GeneticAlgorithm {
         CurrentPopulation = initializePopulation(itemList, STARTINGSIZE);
         NextPopulation.addAll(CurrentPopulation);
         Random random = new Random();
-
+        
         while (topFitness < GOAL) {
             currentRun++;
 
@@ -117,6 +117,9 @@ public class GeneticAlgorithm {
             System.out.print(s);
         });
         System.out.println("Took " + currentRun + " runs");
+
+        System.out.println("From bruteforce: ");
+        System.out.println(BruteForce.permute1(itemList));
     }
 
     /**
