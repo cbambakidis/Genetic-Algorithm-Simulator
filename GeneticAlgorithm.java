@@ -23,13 +23,16 @@ import java.util.Scanner;
  */
 public class GeneticAlgorithm {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         int choice = 0;
         Scanner keyboard = new Scanner(System.in);
         int n = 0;
+        int numThreads = 0;
+        int numEpochs = 0;
+        int popSize = 0;
         String textFile = new String();
-        //Get user choice for wordlist.
-        //Test change.
+        // Get user choice for wordlist.
+        // Test change.
         while (n < 1) {
             try {
                 System.out.print("Please enter [1] for items.txt or [2] for more_items.txt: ");
@@ -53,70 +56,86 @@ public class GeneticAlgorithm {
                 keyboard.nextLine();
             }
         }
-        //CONTROLS
-        ArrayList<Item> itemList = new ArrayList(readData(textFile)); //Change list name.
-        final double MUTATION = .1;
-        final int STARTINGSIZE = 10;
-        int goal;
-        if (choice == 1) {
-            goal = 3400;
-            System.out.println("Goal fitness set to 3400. Computing");
-        } else {
-            goal = 7000;
-            System.out.println("Goal fitness set to 7000. Please wait, this list takes a few minutes... I promise it works");
+        n = 0;
+        while (n < 1) {
+            try {
+                System.out.print("Please enter the desired number of threads(1-8): ");
+                choice = keyboard.nextInt();
+                keyboard.nextLine();
+                if (choice < 9 && choice > 0) {
+                    numThreads = choice;
+                    n++;
+                    break;
+                } else {
+                    n = 0;
+                }
+            } catch (InputMismatchException ex) {
+                System.out.println("Error: you must enter a number between 1 and 8.");
+                keyboard.nextLine();
+            }
         }
-        final int GOAL = goal;
-        int topFitness = 0;
-        int currentRun = 0;
+
+        n = 0;
+        while (n < 1) {
+            try {
+                System.out.print("Please enter the desired number of epochs total: ");
+                choice = keyboard.nextInt();
+                keyboard.nextLine();
+                if (choice > 0) {
+                    numEpochs = choice;
+                    n++;
+                    break;
+                } else {
+                    n = 0;
+                }
+            } catch (InputMismatchException ex) {
+                System.out.println("Error: you must enter a whole number.");
+                keyboard.nextLine();
+            }
+        }
+        n = 0;
+        while (n < 1) {
+            try {
+                System.out.print("Please enter the desired starting population size: ");
+                choice = keyboard.nextInt();
+                keyboard.nextLine();
+                if (choice > 0) {
+                    popSize = choice;
+                    n++;
+                    break;
+                } else {
+                    n = 0;
+                }
+            } catch (InputMismatchException ex) {
+                System.out.println("Error: you must enter a whole number.");
+                keyboard.nextLine();
+            }
+        }
+        // CONTROLS
+
+        ArrayList<Item> itemList = new ArrayList<>(readData(textFile)); // Change list name.
+
         ArrayList<Chromosome> CurrentPopulation;
-        ArrayList<Chromosome> NextPopulation = new ArrayList();
+        ArrayList<Chromosome> NextPopulation = new ArrayList<>();
 
-        //STEP ONE: INITIALIZE FIRST POPULATION WITH 10 MEMBERS.
-        CurrentPopulation = initializePopulation(itemList, STARTINGSIZE);
-        NextPopulation.addAll(CurrentPopulation);
-        Random random = new Random();
-        
-        while (topFitness < GOAL) {
-            currentRun++;
-
-            //STEP 2: ADD EACH OF THE INDIVIDUALS IN THE CURRENT POPULATION TO THE NEXT POPULATION
-            NextPopulation.addAll(CurrentPopulation);
-
-            //STEP 3: RANDOMLY PAIR OFF THE INDIVIDUALS AND PERFORM CROSSOVER. ADD CHILD TO NEXT POPULATION AS WELL.
-            Collections.shuffle(CurrentPopulation);
-            for (int g = 0; g < CurrentPopulation.size(); g++) {
-                NextPopulation.add(CurrentPopulation.get(g).crossover(NextPopulation.get(g)));
-            }
-
-            //STEP 4: APPLY MUTATION TO 10% OF THE NEXT POPULATION.
-            for (int i = 0; i < (int) Math.floor(NextPopulation.size() * MUTATION); i++) {
-                int j = random.nextInt(NextPopulation.size());
-                NextPopulation.get(j).mutate();
-            }
-
-            //STEP 5: SORT THE MEMBERS OF THE NEXT POPULATION ACCORDING TO THEIR FITNESS.
-            Collections.sort(NextPopulation);
-
-            //STEP 6: CLEAR OUT THE OLD POPULATION AND ADD IN THE TOP 10 MEMBERS OF THE NEXT POPULATION/
-            CurrentPopulation.clear();
-            for (int i = 0; i < 10; i++) {
-                CurrentPopulation.add(NextPopulation.get(i));
-            }
-
-            //for testing purposes
-            topFitness = NextPopulation.get(0).getFitness();
-            Collections.sort(CurrentPopulation);
-            if(currentRun % 1000 == 1){
-                System.out.println("Still computing..");
-            }
-            //System.out.println("[Current run:" + currentRun + " Top fitness:" + topFitness + "]");
+        // STEP ONE: INITIALIZE FIRST POPULATION WITH 10 MEMBERS.
+        CurrentPopulation = initializePopulation(itemList, popSize);
+        // Pass all threads current population, divided up.
+        int epochsPerThread = numEpochs / numThreads;
+        ArrayList<GeneThread> threadList = new ArrayList<GeneThread>();
+        for (int i = 0; i < numThreads; i++) {
+            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread);
+            threadList.add(N);
         }
-
-        //Show top 10 chromosomes. Population is sorted on line 66.
-        CurrentPopulation.subList(0, 10).forEach((s) -> {
-            System.out.print(s);
-        });
-        System.out.println("Took " + currentRun + " runs");
+        for (GeneThread D : threadList) {
+            D.run();
+        }
+        for (GeneThread D : threadList) {
+            D.join();
+        }
+        for (GeneThread D : threadList) {
+            D.printTop(popSize / numThreads);
+        }
 
         System.out.println("From bruteforce: ");
         System.out.println(BruteForce.getOptimalSet(itemList));
@@ -131,7 +150,7 @@ public class GeneticAlgorithm {
      * @throws IOException
      */
     public static ArrayList<Item> readData(String filename) throws FileNotFoundException, IOException {
-        ArrayList<Item> itemsList = new ArrayList();
+        ArrayList<Item> itemsList = new ArrayList<>();
         try (FileReader text = new FileReader(filename)) {
             Scanner fileIn = new Scanner(text);
             String name;
@@ -147,6 +166,7 @@ public class GeneticAlgorithm {
                 itemsList.add(newItem);
             }
             text.close();
+            fileIn.close();
         }
         return itemsList;
     }
@@ -155,11 +175,11 @@ public class GeneticAlgorithm {
      * This method initializes the population with the desired size and items.
      * Returns an ArrayList of chromosomes.
      *
-     * @param items is an ArrayList of items that each individual chromosome
-     * will have. What's included for each member is randomized in the
-     * constructor.
+     * @param items          is an ArrayList of items that each individual
+     *                       chromosome will have. What's included for each member
+     *                       is randomized in the constructor.
      * @param populationSize is the desired number of individuals per population
-     * generated.
+     *                       generated.
      * @return returns a population with randomized items.
      */
     public static ArrayList<Chromosome> initializePopulation(ArrayList<Item> items, int populationSize) {
