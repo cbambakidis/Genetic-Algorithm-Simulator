@@ -119,7 +119,7 @@ public class GeneticAlgorithm {
         System.out.println("Took " + currentRun + " runs");
 
         System.out.println("From bruteforce: ");
-        System.out.println(BruteForce.permute1(itemList));
+        System.out.println(BruteForce.getOptimalSet(itemList));
     }
 
     /**
