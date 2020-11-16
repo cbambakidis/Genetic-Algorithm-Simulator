@@ -33,6 +33,7 @@ public class GeneticAlgorithm {
         // Test change.
         while (n < 1) {
             try {
+                System.out.println("Note: more_items.txt takes an incredible amount of time to complete with the dummy method, \neven with all 8 threads, and you may not get good results.\nI recommend using the basic items file for testing.");
                 System.out.print("Please enter [1] for items.txt or [2] for more_items.txt: ");
                 choice = keyboard.nextInt();
                 keyboard.nextLine();
@@ -145,13 +146,13 @@ public class GeneticAlgorithm {
             avgFitness += D.getTop().getFitness();
         }
         Chromosome best = new Chromosome();
-        System.out.println("Average (top) fitness: " + avgFitness / count);
+        System.out.println("Average of each threads best chromosome fitness: " + avgFitness / count);
         for (Chromosome N : allTop) {
             if (N.getFitness() > best.getFitness()) {
                 best = N;
             }
         }
-        System.out.println("Best: " + best);
+        System.out.println("Best chromosome across all threads: " + best);
 
         System.out.println("From bruteforce: ");
         // System.out.println(BruteForce.getOptimalSet(itemList));
