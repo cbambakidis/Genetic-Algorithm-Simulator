@@ -1,49 +1,53 @@
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 public class BruteForce {
     // For lists of items 10 or under, we use this recursive method
     // To bruteforce it.
     public static ArrayList<Item> getOptimalSet(ArrayList<Item> items) {
-
-        Collection<List<Item>> d = permute1(items);
-        if(items.size() > 10){
+        if (items.size() > 10) {
             throw new IllegalArgumentException("Can't bruteforce with over 10, for your processors sake.");
         }
-
-       ArrayList<Chromosome> n = new ArrayList<>();
-        for (List<Item> D : d) {
-            ArrayList<Item> FF = new ArrayList<>();
-            for (Item N : D){
-                FF.add(N);
+        ArrayList<ArrayList<Item>> listOfChromosomes = crack(items);
+        ArrayList<Chromosome> arrayListOfCombos = new ArrayList<Chromosome>();
+        //Convert from arraylists of items to arraylist of chromosomes. Couldn't figure out how to do it with wrappers.
+        for (List<Item> D : listOfChromosomes) {
+            ArrayList<Item> temp = new ArrayList<>();
+            for (Item N : D) {
+                temp.add(N);
             }
-            Chromosome L = new Chromosome(FF);
-            n.add(L);
+            Chromosome placeholder = new Chromosome(temp);
+            arrayListOfCombos.add(placeholder);
         }
-        Chromosome fittest = n.get(0);
-
-        for (int i = 0; i < n.size(); i++) {
-            if (n.get(i).getFitness() > fittest.getFitness()) {
-                fittest = n.get(i);
+        //Get fittest chromosome out of all the possible combos.
+        Chromosome fittest = arrayListOfCombos.get(0);
+        for (int i = 0; i < arrayListOfCombos.size(); i++) {
+            if (arrayListOfCombos.get(i).getFitness() > fittest.getFitness()) {
+                fittest = arrayListOfCombos.get(i);
             }
         }
         return fittest;
 
     }
-    //"Adapt" it to be non generic.
-    private static <T> Collection<List<T>> permute1(Collection<T> input) {
-        Collection<List<T>> output = new ArrayList<List<T>>();
+
+    // I adapted this method from user "Maximin" on stackoverflow.
+    //Take an arraylist as input and return an arraylist of arraylists of items as output.
+    private static ArrayList<ArrayList<Item>> crack(ArrayList<Item> input) {
+        ArrayList<ArrayList<Item>> output = new ArrayList<ArrayList<Item>>();
         if (input.isEmpty()) {
-            output.add(new ArrayList<T>());
+            output.add(new ArrayList<Item>());
             return output;
         }
-        List<T> list = new ArrayList<T>(input);
-        T head = list.get(0);
-        List<T> rest = list.subList(1, list.size());
-        for (List<T> permutations : permute1(rest)) {
-            List<List<T>> subLists = new ArrayList<List<T>>();
+        ArrayList<Item> list = new ArrayList<Item>(input);
+        Item head = list.get(0);
+        List<Item> temp = list.subList(1, list.size());
+        ArrayList<Item> rest = new ArrayList<Item>();
+        rest.addAll(temp);
+        for (ArrayList<Item> permutations : crack(rest)) {
+            List<ArrayList<Item>> subLists = new ArrayList<ArrayList<Item>>();
             for (int i = 0; i <= permutations.size(); i++) {
-                List<T> subList = new ArrayList<T>();
+                ArrayList<Item> subList = new ArrayList<Item>();
                 subList.addAll(permutations);
                 subList.add(i, head);
                 subLists.add(subList);

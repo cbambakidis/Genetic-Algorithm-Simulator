@@ -119,6 +119,7 @@ public class GeneticAlgorithm {
 
         // STEP ONE: INITIALIZE FIRST POPULATION WITH 10 MEMBERS.
         CurrentPopulation = initializePopulation(itemList, popSize);
+        
         // Pass all threads current population, divided up.
         int epochsPerThread = numEpochs / numThreads;
         ArrayList<GeneThread> threadList = new ArrayList<GeneThread>();
@@ -155,7 +156,7 @@ public class GeneticAlgorithm {
         System.out.println("Best chromosome across all threads: " + best);
 
         System.out.println("From bruteforce: ");
-        // System.out.println(BruteForce.getOptimalSet(itemList));
+         System.out.println(BruteForce.getOptimalSet(itemList));
     }
 
     /**
