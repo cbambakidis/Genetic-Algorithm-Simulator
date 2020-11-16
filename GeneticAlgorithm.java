@@ -122,21 +122,39 @@ public class GeneticAlgorithm {
         int epochsPerThread = numEpochs / numThreads;
         ArrayList<GeneThread> threadList = new ArrayList<GeneThread>();
         for (int i = 0; i < numThreads; i++) {
-            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread, popSize/numThreads, i);
+            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread, popSize / numThreads, i);
             threadList.add(N);
         }
+        final long startTime = System.currentTimeMillis();
         for (GeneThread D : threadList) {
-            D.run();
+            D.start();
         }
         for (GeneThread D : threadList) {
             D.join();
         }
+        final long endTime = System.currentTimeMillis();
+        System.out.println("Time: " + (endTime - startTime) + "ms");
+        ArrayList<ArrayList<Chromosome>> X = new ArrayList<>();
+        ArrayList<Chromosome> allTop = new ArrayList<>();
+        int avgFitness = 0;
+        int count = 0;
         for (GeneThread D : threadList) {
-            D.printTop(popSize / numThreads);
+            count++;
+            allTop.add(D.getTop());
+            X.add(D.getCurrentPopulation());
+            avgFitness += D.getTop().getFitness();
         }
+        Chromosome best = new Chromosome();
+        System.out.println("Average (top) fitness: " + avgFitness / count);
+        for (Chromosome N : allTop) {
+            if (N.getFitness() > best.getFitness()) {
+                best = N;
+            }
+        }
+        System.out.println("Best: " + best);
 
         System.out.println("From bruteforce: ");
-        //System.out.println(BruteForce.getOptimalSet(itemList));
+        // System.out.println(BruteForce.getOptimalSet(itemList));
     }
 
     /**

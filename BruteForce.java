@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 public class BruteForce {
     // For lists of items 10 or under, we use this recursive method
     // To bruteforce it.
@@ -9,8 +8,7 @@ public class BruteForce {
 
         Collection<List<Item>> d = permute1(items);
         if(items.size() > 10){
-            System.out.println("Invalid Parameters.");
-            return null;
+            throw new IllegalArgumentException("Can't bruteforce with over 10, for your processors sake.");
         }
 
        ArrayList<Chromosome> n = new ArrayList<>();

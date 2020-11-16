@@ -12,7 +12,8 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Random rng = new Random();
+    private static Random rng = new Random();
+    public static long dummy = 0;
 
     public Chromosome() {
     }
@@ -69,6 +70,10 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
 
     //Get fitness method. Returns fitness.
     public int getFitness() {
+        dummy = 0;
+        for (int i=0; i<this.size()*1000; i++) {
+        dummy += i;
+    }
         double totalWeight = 0;
         int totalValue = 0;
         if(this.size() == 0){
@@ -85,6 +90,7 @@ public class Chromosome extends ArrayList<Item> implements Comparable<Chromosome
         } else {
             return totalValue;
         }
+
 
     }
 
