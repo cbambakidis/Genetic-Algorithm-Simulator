@@ -156,7 +156,11 @@ public class GeneticAlgorithm {
         System.out.println("Best chromosome across all threads: " + best);
 
         System.out.println("From bruteforce: ");
-         System.out.println(BruteForce.getOptimalSet(itemList));
+         try {
+            System.out.println(BruteForce.getOptimalSet(itemList));
+        } catch (InvalidArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

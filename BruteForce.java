@@ -1,13 +1,13 @@
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class BruteForce {
     // For lists of items 10 or under, we use this recursive method
     // To bruteforce it.
-    public static ArrayList<Item> getOptimalSet(ArrayList<Item> items) {
+    //MAKE CUSTOM ECXEPTION CLASS 
+    public static ArrayList<Item> getOptimalSet(ArrayList<Item> items) throws InvalidArgumentException {
         if (items.size() > 10) {
-            throw new IllegalArgumentException("Can't bruteforce with over 10, for your processors sake.");
+                throw new InvalidArgumentException("Over 10 items: Can't bruteforce with " + items.size() + " items, for your processors sake.");
         }
         ArrayList<ArrayList<Item>> listOfChromosomes = crack(items);
         ArrayList<Chromosome> arrayListOfCombos = new ArrayList<Chromosome>();
@@ -31,7 +31,7 @@ public class BruteForce {
 
     }
 
-    // I adapted this method from user "Maximin" on stackoverflow.
+    // I adapted this method from the practice problem as well as from a question user "Maximin" on stackoverflow.
     //Take an arraylist as input and return an arraylist of arraylists of items as output.
     private static ArrayList<ArrayList<Item>> crack(ArrayList<Item> input) {
         ArrayList<ArrayList<Item>> output = new ArrayList<ArrayList<Item>>();
