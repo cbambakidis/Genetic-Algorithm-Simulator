@@ -26,6 +26,7 @@ public class GeneThread extends Thread {
     }
 
     public void run() {
+        System.out.println("Thread " + threadNum + " started.");
         Chromosome topChromie = new Chromosome();
         while (starter != numEpochs) {
             NextPopulation.addAll(CurrentPopulation);
@@ -61,9 +62,8 @@ public class GeneThread extends Thread {
                     System.out.println("Thread " + threadNum + " has achieved greatness: " + topChromie);
                     return;
                 }
-            }
-            else{
-                if(CurrentPopulation.get(0).getFitness() >= 3400){
+            } else {
+                if (CurrentPopulation.get(0).getFitness() >= 3400) {
                     System.out.println("Thread " + threadNum + " has achieved greatness: " + topChromie);
                     return;
                 }

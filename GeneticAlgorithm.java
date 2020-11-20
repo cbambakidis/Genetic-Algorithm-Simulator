@@ -122,14 +122,21 @@ public class GeneticAlgorithm {
         
         // Pass all threads current population, divided up.
         int epochsPerThread = numEpochs / numThreads;
+        int remainder = numEpochs - (epochsPerThread*numThreads);
         ArrayList<GeneThread> threadList = new ArrayList<GeneThread>();
         for (int i = 0; i < numThreads; i++) {
-            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread, popSize / numThreads, i);
+            if(i == numThreads-1 && remainder != 0){
+                GeneThread G =  new GeneThread(CurrentPopulation, epochsPerThread + remainder, popSize / numThreads, i+5);
+                threadList.add(G);
+                break;
+            }
+            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread, popSize / numThreads, i+1);
             threadList.add(N);
+            System.out.println(i);
         }
         final long startTime = System.currentTimeMillis();
         for (GeneThread D : threadList) {
-            D.start();
+\            D.start();
         }
         for (GeneThread D : threadList) {
             D.join();
