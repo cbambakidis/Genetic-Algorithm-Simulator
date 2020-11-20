@@ -1,6 +1,6 @@
 
 /**
- *
+ * This method is unchanged from project one.
  * @author Costa Bambakidis
  */
 public class Item {

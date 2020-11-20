@@ -1,7 +1,7 @@
 /*
  *  @author Constantine Bambakidis
  *  CS1181, Fall 2020
- *  Project 1
+ *  Project 5
  */
 
 import java.io.FileNotFoundException;
@@ -11,29 +11,43 @@ import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-/**
- * This project is a genetic algorithm. The purpose is to find the best
- * combination of items to take, based on weight and value, during a zombie
- * apocalypse. There are 7 possible items, with varying values and weights. The
- * best chromosome will be one that can take the highest value without exceeding
- * 10 pounds. In this case, the highest possible value is 3400. This algorithm
- * is made to quickly solve that problem.
+/** 
+ * Please Read: Multithreaded Project One - Genetic Algorithm. 
+ * The only change from my Project 1 was to change my population size and number of epochs to
+ * variables rather than constants. 
+ * I also added: the dummy method in getFitness(), the
+ * bruteforce method, the Invalid Exception for bruteforce, and the ability to
+ * multithread. Running the algorithm more_items.txt was already terribly slow
+ * before the dummy method, so it's pretty much unusable in this program unless
+ * you have an AMD Threadripper.
+ * 
+ * Time difference for mutithreading: items.txt, 500 epochs, 10 population size.
+ * 1 thread: 55900ms, 3400 average fitness. 
+ * 2 threads: 7333ms, 3400 average fitness. 
+ * 3 threads: 2227ms, 3233 average fitness. 
+ * 4 threads: 1037ms, 2875 average fitness. 
+ * 5 threads: 352ms, 3400 average fitness. 
+ * 6 threads: 259ms,3400 average fitness. 
+ * 7 threads: 275ms, 3400 average fitness. 
+ * 8 threads: 231ms, 3050 average fitness. 
+ * Multithreading the program saves me nearly an entire minute vs using one just thread.
  */
 public class GeneticAlgorithm {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         int choice = 0;
-        Scanner keyboard = new Scanner(System.in);
+        final Scanner keyboard = new Scanner(System.in);
         int n = 0;
         int numThreads = 0;
         int numEpochs = 0;
         int popSize = 0;
         String textFile = new String();
-        // Get user choice for wordlist.
-        // Test change.
+
+        // Get user choice for list choice, population size, epochs, number of threads.
         while (n < 1) {
             try {
-                System.out.println("Note: more_items.txt takes an incredible amount of time to complete with the dummy method, \neven with all 8 threads, and you may not get good results.\nI recommend using the basic items file for testing.");
+                System.out.println(
+                        "Note: more_items.txt takes an incredible amount of time to complete with the dummy method, \neven with all 8 threads, and you may not get good results.\nI recommend using the basic items file for testing.");
                 System.out.print("Please enter [1] for items.txt or [2] for more_items.txt: ");
                 choice = keyboard.nextInt();
                 keyboard.nextLine();
@@ -111,37 +125,47 @@ public class GeneticAlgorithm {
             }
         }
         keyboard.close();
-        // CONTROLS
 
-        ArrayList<Item> itemList = new ArrayList<>(readData(textFile)); // Change list name.
-
+        ArrayList<Item> itemList = new ArrayList<>(readData(textFile));
         ArrayList<Chromosome> CurrentPopulation;
 
-        // STEP ONE: INITIALIZE FIRST POPULATION WITH 10 MEMBERS.
+        // STEP ONE: INITIALIZE FIRST POPULATION WITH popSize MEMBERS.
         CurrentPopulation = initializePopulation(itemList, popSize);
-        
-        // Pass all threads current population, divided up.
+
+        // Pass all threads current population, divided up. Add remainder to last
+        // thread, since java does integer divison.
         int epochsPerThread = numEpochs / numThreads;
-        int remainder = numEpochs - (epochsPerThread*numThreads);
+        int remainder = numEpochs - (epochsPerThread * numThreads);
+
+        // ArrayList of threads.
         ArrayList<GeneThread> threadList = new ArrayList<GeneThread>();
         for (int i = 0; i < numThreads; i++) {
-            if(i == numThreads-1 && remainder != 0){
-                GeneThread G =  new GeneThread(CurrentPopulation, epochsPerThread + remainder, popSize / numThreads, i+5);
+
+            // This part adds the remainder number of epochs to the last thread
+            if (i == numThreads - 1 && remainder != 0) {
+                GeneThread G = new GeneThread(CurrentPopulation, epochsPerThread + remainder, popSize / numThreads,
+                        i + 5);
                 threadList.add(G);
                 break;
             }
-            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread, popSize / numThreads, i+1);
+
+            // Each thread is initialized with the current population, amount of times it
+            // should run, population size it should run for, and a thread number.
+            GeneThread N = new GeneThread(CurrentPopulation, epochsPerThread, popSize / numThreads, i + 1);
             threadList.add(N);
-            System.out.println(i);
         }
+
+        // Start timer, start all threads, join all threads, end the timer.
         final long startTime = System.currentTimeMillis();
         for (GeneThread D : threadList) {
-\            D.start();
+            D.start();
         }
         for (GeneThread D : threadList) {
             D.join();
         }
         final long endTime = System.currentTimeMillis();
+
+        // Print all the stuff.
         System.out.println("Time: " + (endTime - startTime) + "ms");
         ArrayList<ArrayList<Chromosome>> X = new ArrayList<>();
         ArrayList<Chromosome> allTop = new ArrayList<>();
@@ -162,8 +186,9 @@ public class GeneticAlgorithm {
         }
         System.out.println("Best chromosome across all threads: " + best);
 
+        // Call the bruteforce method
         System.out.println("From bruteforce: ");
-         try {
+        try {
             System.out.println(BruteForce.getOptimalSet(itemList));
         } catch (InvalidArgumentException e) {
             e.printStackTrace();
@@ -174,8 +199,11 @@ public class GeneticAlgorithm {
      * This method parses the name, value and weight of the items from the list.
      *
      * @param filename is the name of the file with the list of items.
+     * 
      * @return returns a usable ArrayList of item objects.
+     * 
      * @throws FileNotFoundException in case the file doesn't exist.
+     * 
      * @throws IOException
      */
     public static ArrayList<Item> readData(String filename) throws FileNotFoundException, IOException {
@@ -200,15 +228,16 @@ public class GeneticAlgorithm {
         return itemsList;
     }
 
-    /**
+    /*
      * This method initializes the population with the desired size and items.
      * Returns an ArrayList of chromosomes.
      *
-     * @param items          is an ArrayList of items that each individual
-     *                       chromosome will have. What's included for each member
-     *                       is randomized in the constructor.
+     * @param items is an ArrayList of items that each individual chromosome will
+     * have. What's included for each member is randomized in the constructor.
+     * 
      * @param populationSize is the desired number of individuals per population
-     *                       generated.
+     * generated.
+     * 
      * @return returns a population with randomized items.
      */
     public static ArrayList<Chromosome> initializePopulation(ArrayList<Item> items, int populationSize) {
