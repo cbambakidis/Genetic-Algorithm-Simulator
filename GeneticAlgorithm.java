@@ -47,7 +47,7 @@ public class GeneticAlgorithm {
         while (n < 1) {
             try {
                 System.out.println(
-                        "Note: more_items.txt takes an incredible amount of time to complete with the dummy method, \neven with all 8 threads, and you may not get good results.\nI recommend using the basic items file for testing.");
+                "Note: I recommend using the basic items file for testing.\nIn project one, I found that it takes about 7000 epochs to complete the more_items list. This takes\nan eternity to proccess in this project, because the dummy method is added.");
                 System.out.print("Please enter [1] for items.txt or [2] for more_items.txt: ");
                 choice = keyboard.nextInt();
                 keyboard.nextLine();
